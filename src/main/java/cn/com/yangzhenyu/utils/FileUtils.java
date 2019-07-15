@@ -110,6 +110,7 @@ public class FileUtils {
     public static void rename(File file, String[] whileList) {
         for (File f : file.listFiles()) {
             String name = f.getName();
+            if (".git".equals(name)) continue;
             boolean flag = true;
             if (whileList != null && whileList.length > 0) {
                 for (String value : whileList) {
