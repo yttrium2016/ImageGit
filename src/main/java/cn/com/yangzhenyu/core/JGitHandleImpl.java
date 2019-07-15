@@ -20,12 +20,14 @@ public class JGitHandleImpl implements JGitHandle {
 
     private static Git git = null;
     private static String mPath = System.getProperty("user.dir");
-    private UsernamePasswordCredentialsProvider credentialsProvider;
 
     public JGitHandleImpl() {
         //设置远程服务器上的用户名和密码 (可以不用)
-        credentialsProvider = new
-                UsernamePasswordCredentialsProvider(Config.getString("git.username", ""), Config.getString("git.password", ""));
+    }
+
+    public UsernamePasswordCredentialsProvider getCredentialsProvider() {
+        return new UsernamePasswordCredentialsProvider(Config.getString("git.username", ""), Config.getString("git.password", ""));
+
     }
 
     public String getLocalPath() {
@@ -68,7 +70,7 @@ public class JGitHandleImpl implements JGitHandle {
                     .setURI(Config.getString("git.url", "")) //设置远程URI
                     .setBranch("master") //设置clone下来的分支
                     .setDirectory(file) //设置下载存放路径
-                    .setCredentialsProvider(credentialsProvider) //设置权限验证
+                    .setCredentialsProvider(getCredentialsProvider()) //设置权限验证
                     .call();
         } catch (GitAPIException e) {
             e.printStackTrace();
@@ -126,7 +128,7 @@ public class JGitHandleImpl implements JGitHandle {
     @Override
     public void gitPush() {
         try {
-            openGit().push().setRemote("origin").setCredentialsProvider(credentialsProvider).call();
+            openGit().push().setRemote("origin").setCredentialsProvider(getCredentialsProvider()).call();
         } catch (GitAPIException e) {
             e.printStackTrace();
             System.out.println("git push 失败" + e.getMessage());
@@ -148,7 +150,7 @@ public class JGitHandleImpl implements JGitHandle {
     @Override
     public void gitPull() {
         try {
-            openGit().pull().setRemote("origin").setCredentialsProvider(credentialsProvider).call();
+            openGit().pull().setRemote("origin").setCredentialsProvider(getCredentialsProvider()).call();
         } catch (GitAPIException e) {
             e.printStackTrace();
             System.out.println("git push 失败" + e.getMessage());
@@ -177,6 +179,5 @@ public class JGitHandleImpl implements JGitHandle {
         gitCheckout();
         gitPull();
     }
-
 
 }
