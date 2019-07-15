@@ -35,4 +35,6 @@ public interface JGitHandle {
     void submitPush();
 
     void getPull();
+
+    String getLocalPath();
 }

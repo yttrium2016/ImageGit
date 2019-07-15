@@ -12,6 +12,7 @@ import cn.com.yangzhenyu.view.YButton;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -27,7 +28,6 @@ class GitPanel extends JPanel {
 
     private JTextArea textBox = null;
     private JGitHandle jGit = new JGitHandleImpl();
-    private String mPath = System.getProperty("user.dir");
     private boolean flag = false;
 
     private Handler handler = new MyHandler() {
@@ -54,12 +54,14 @@ class GitPanel extends JPanel {
         btnBox.setBackground(Color.white);
         YButton btnInit = new YButton("初始化");
         YButton btnGet = new YButton("获取");
+        YButton btnRename = new YButton("重命名");
         YButton btnUpload = new YButton("更新上传");
-        YButton btnRename = new YButton("重命名上传");
+
         btnBox.add(btnInit);
         btnBox.add(btnGet);
-        btnBox.add(btnUpload);
         btnBox.add(btnRename);
+        btnBox.add(btnUpload);
+
         this.add(btnBox, BorderLayout.PAGE_START);
 
         // 文本域
@@ -82,8 +84,19 @@ class GitPanel extends JPanel {
             handler.publish(new MyMessage("开始初始化"));
             new Thread(() -> {
                 try {
+                    // 初始化
                     jGit.initGitRepository();
-                    handler.publish(new MyMessage("初始化完成位置:" + mPath + Config.getString("git.localhost", "\\git")));
+                    // 记录下白名单
+                    String path = jGit.getLocalPath();
+                    List<String> names = FileUtils.getFileNames(new File(path));
+                    if (names != null && names.size() > 0) {
+                        String str = StringUtils.getWhileListStr(names);
+                        Config.putString("file.while.list", str);
+                    } else {
+                        Config.putString("file.while.list", "");
+                    }
+
+                    handler.publish(new MyMessage("初始化完成位置:" + jGit.getLocalPath()));
                 } catch (Exception ex) {
                     handler.publish(new MyMessage(ex.getMessage()));
                 }
@@ -101,6 +114,7 @@ class GitPanel extends JPanel {
             flag = true;
             handler.publish(new MyMessage("开始远程获取"));
             new Thread(() -> {
+                // 远程获取
                 jGit.getPull();
                 handler.publish(new MyMessage("远程获取完成"));
                 flag = false;
@@ -117,6 +131,7 @@ class GitPanel extends JPanel {
             flag = true;
             handler.publish(new MyMessage("开始更新上传"));
             new Thread(() -> {
+                // 推送到远程
                 jGit.submitPush();
                 handler.publish(new MyMessage("更新上传完成"));
                 flag = false;
@@ -132,16 +147,11 @@ class GitPanel extends JPanel {
                 return;
             }
             flag = true;
-            handler.publish(new MyMessage("开始拉取"));
+            handler.publish(new MyMessage("开始重命名"));
             new Thread(() -> {
-                jGit.getPull();
-                handler.publish(new MyMessage("拉取结束"));
-                handler.publish(new MyMessage("开始重命名"));
-                FileUtils.remove(new File(mPath + Config.getString("git.local", "/git")));
+                String[] whileList = Config.getString("file.while.list", "").split(",");
+                FileUtils.rename(new File(jGit.getLocalPath()), whileList);
                 handler.publish(new MyMessage("重命名结束"));
-                handler.publish(new MyMessage("开始上传"));
-                jGit.submitPush();
-                handler.publish(new MyMessage("更新上传完成"));
                 flag = false;
             }).start();
         });

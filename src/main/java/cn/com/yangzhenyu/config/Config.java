@@ -29,7 +29,7 @@ public class Config {
                     putString("git.url", "");
                     putString("git.username", "");
                     putString("git.password", "");
-                    putString("git.local", "/git");
+                    putString("git.local", "/img");
                 } catch (IOException e) {
                     System.out.println("文件创建失败...");
                     e.printStackTrace();

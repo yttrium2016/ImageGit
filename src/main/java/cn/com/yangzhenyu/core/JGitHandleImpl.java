@@ -28,7 +28,7 @@ public class JGitHandleImpl implements JGitHandle {
                 UsernamePasswordCredentialsProvider(Config.getString("git.username", ""), Config.getString("git.password", ""));
     }
 
-    private String getLocalPath() {
+    public String getLocalPath() {
         return mPath + Config.getString("git.local", "/git");
     }
 

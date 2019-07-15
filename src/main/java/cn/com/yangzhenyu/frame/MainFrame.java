@@ -16,7 +16,7 @@ import java.awt.event.WindowEvent;
  */
 public class MainFrame extends JFrame {
 
-    private String appTitle = "图库工具箱1.0(杨振宇专版)";
+    private static final String appTitle = "图库工具箱1.0(杨振宇专版)";
 
     public MainFrame() {
         super();

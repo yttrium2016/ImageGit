@@ -21,9 +21,21 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
-    public static String now(){
+    public static String now() {
         Format format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return format.format(new Date());
+    }
+
+    public static String getWhileListStr(List<String> names) {
+        String result = "";
+        for (String name : names) {
+            if ("".equals(result)) {
+                result = name;
+            } else {
+                result += "," + name;
+            }
+        }
+        return result;
     }
 
     /**
@@ -47,7 +59,7 @@ public class StringUtils {
         return encodeStr;
     }
 
-    public static String getNewDate(String pattern){
+    public static String getNewDate(String pattern) {
         Date currentTime = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);
         return formatter.format(currentTime);
@@ -55,10 +67,11 @@ public class StringUtils {
 
     /**
      * 获取UUID去掉'-'的32位字符串
+     *
      * @return
      */
-    public static String getUUID(){
-        return UUID.randomUUID().toString().replaceAll("-","");
+    public static String getUUID() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     /**

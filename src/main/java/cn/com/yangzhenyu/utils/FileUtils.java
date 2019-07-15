@@ -103,10 +103,22 @@ public class FileUtils {
         return result.toString();
     }
 
-    public static void remove(File file) {
+    public static void rename(File file) {
+        rename(file, null);
+    }
+
+    public static void rename(File file, String[] whileList) {
         for (File f : file.listFiles()) {
             String name = f.getName();
-            if (!Pattern.matches("\\d{17} | \\d{14}", name.substring(0, name.indexOf(".")))) {
+            boolean flag = true;
+            if (whileList != null && whileList.length > 0) {
+                for (String value : whileList) {
+                    if (value.equals(name)) {
+                        flag = false;
+                    }
+                }
+            }
+            if (flag && !Pattern.matches("\\d{17} | \\d{14}", name.substring(0, name.indexOf(".")))) {
                 f.renameTo(new File(file.getPath() + "\\" + name.replace(name.substring(0, name.indexOf(".")), StringUtils.getNumberName())));
                 try {
                     Thread.sleep(1);
