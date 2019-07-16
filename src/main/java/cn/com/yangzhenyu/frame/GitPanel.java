@@ -87,14 +87,7 @@ class GitPanel extends JPanel {
                     // 初始化
                     jGit.initGitRepository();
                     // 记录下白名单
-                    String path = jGit.getLocalPath();
-                    List<String> names = FileUtils.getFileNames(new File(path));
-                    if (names != null && names.size() > 0) {
-                        String str = StringUtils.getWhileListStr(names);
-                        Config.putString("file.while.list", str);
-                    } else {
-                        Config.putString("file.while.list", "");
-                    }
+                    initWhileList();
 
                     handler.publish(new MyMessage("初始化完成位置:" + jGit.getLocalPath()));
                 } catch (Exception ex) {
@@ -133,6 +126,7 @@ class GitPanel extends JPanel {
             new Thread(() -> {
                 // 推送到远程
                 jGit.submitPush();
+                initWhileList();
                 handler.publish(new MyMessage("更新上传完成"));
                 flag = false;
             }).start();
@@ -157,4 +151,15 @@ class GitPanel extends JPanel {
         });
     }
 
+    public void initWhileList(){
+        // 记录下白名单
+        String path = jGit.getLocalPath();
+        List<String> names = FileUtils.getFileNames(new File(path));
+        if (names != null && names.size() > 0) {
+            String str = StringUtils.getWhileListStr(names);
+            Config.putString("file.while.list", str);
+        } else {
+            Config.putString("file.while.list", "");
+        }
+    }
 }
